@@ -4,9 +4,7 @@ Plano interactivo del lote (HTML/CSS/JS). Abre en el navegador; no necesita back
 
 ## En la web (GitHub Pages)
 
-Tras publicar: `https://jeremythen.github.io/solar/`
-
-*(Si el usuario de GitHub es otro, cambia `jeremythen` por tu usuario.)*
+**URL:** https://jeremythen.github.io/solar/
 
 ## En local
 
