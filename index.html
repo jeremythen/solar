@@ -10,215 +10,329 @@
   <link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,400;0,9..40,500;0,9..40,600;0,9..40,700;1,9..40,400&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet" />
 </head>
 <body>
-  <div class="app">
-    <aside class="sidebar">
-      <header class="brand">
-        <p class="brand-kicker" id="brand-kicker">Lote 241 · 552.83 m²</p>
-        <h1>Solar</h1>
-        <p class="brand-meta" id="brand-meta">Frente 24.20 m · Fondo 20.02 m · Prof. 25.01 m</p>
-      </header>
+  <div class="app-shell">
+    <nav class="tabs" role="tablist" aria-label="Vistas">
+      <button type="button" class="tab active" data-tab="lot" role="tab" aria-selected="true">Terreno</button>
+      <button type="button" class="tab" data-tab="framing" role="tab" aria-selected="false">Estructura</button>
+      <span class="tabs-note mono" id="framing-tab-note">Sin estructura abierta</span>
+    </nav>
 
-      <section class="panel">
-        <h2>Unidades</h2>
-        <div class="tool-row" role="group" aria-label="Unidad">
-          <button type="button" class="unit-btn active" data-unit="m" id="unit-m">Metros (m)</button>
-          <button type="button" class="unit-btn" data-unit="ft" id="unit-ft">Pies (ft)</button>
-        </div>
-      </section>
+    <div id="view-lot" class="view active">
+      <div class="app">
+        <aside class="sidebar">
+          <header class="brand">
+            <p class="brand-kicker" id="brand-kicker">Lote 241 · 552.83 m²</p>
+            <h1>Solar</h1>
+            <p class="brand-meta" id="brand-meta">Frente 24.20 m · Fondo 20.02 m · Prof. 25.01 m</p>
+          </header>
 
-      <section class="panel">
-        <h2>Herramientas</h2>
-        <div class="tool-row tools-4" role="group" aria-label="Modo">
-          <button type="button" class="tool active" data-tool="select" title="Seleccionar / mover (V)">
-            Seleccionar
-          </button>
-          <button type="button" class="tool" data-tool="rect" title="Dibujar rectángulo (R)">
-            Rectángulo
-          </button>
-          <button type="button" class="tool" data-tool="circle" title="Dibujar círculo (C)">
-            Círculo
-          </button>
-          <button type="button" class="tool" data-tool="tree" title="Plantar árbol (T)">
-            Árbol
-          </button>
-        </div>
-      </section>
-
-      <section class="panel">
-        <h2>Nuevo área</h2>
-        <div class="tool-row" role="group" aria-label="Forma al colocar">
-          <button type="button" class="shape-btn active" data-place-shape="rect">Rectángulo</button>
-          <button type="button" class="shape-btn" data-place-shape="circle">Círculo</button>
-        </div>
-        <label class="field">
-          <span>Etiqueta</span>
-          <input id="area-label" type="text" placeholder="ej. Shed, piscina…" value="Área" />
-        </label>
-        <div class="field-row">
-          <label class="field">
-            <span id="lbl-area-w">Ancho (m)</span>
-            <input id="area-w" type="number" min="0.5" step="0.1" value="4" />
-          </label>
-          <label class="field" id="field-area-h">
-            <span id="lbl-area-h">Alto (m)</span>
-            <input id="area-h" type="number" min="0.5" step="0.1" value="3" />
-          </label>
-        </div>
-        <label class="field">
-          <span>Color</span>
-          <input id="area-color" type="color" value="#2f6f4e" />
-        </label>
-        <button type="button" id="btn-place" class="btn primary">Colocar en el centro</button>
-        <p class="hint" id="area-hint">O dibuja con <strong>Rectángulo</strong> / <strong>Círculo</strong> en el plano. El círculo se arrastra desde el centro.</p>
-      </section>
-
-      <section class="panel">
-        <h2>Vista</h2>
-        <label class="check">
-          <input id="toggle-grid" type="checkbox" checked />
-          <span id="lbl-grid">Cuadrícula 1 m</span>
-        </label>
-        <label class="check">
-          <input id="toggle-trees" type="checkbox" checked />
-          Árboles
-        </label>
-        <label class="check">
-          <input id="toggle-dims" type="checkbox" checked />
-          Cotas del solar
-        </label>
-        <div class="zoom-row">
-          <button type="button" id="btn-zoom-out" class="btn ghost" title="Alejar">−</button>
-          <span id="zoom-label" class="mono">100%</span>
-          <button type="button" id="btn-zoom-in" class="btn ghost" title="Acercar">+</button>
-          <button type="button" id="btn-fit" class="btn ghost">Ajustar</button>
-        </div>
-      </section>
-
-      <section class="panel">
-        <h2>Área seleccionada</h2>
-        <div id="selection-empty" class="muted">Ninguna seleccionada</div>
-        <div id="selection-editor" class="hidden">
-          <label class="field">
-            <span>Etiqueta</span>
-            <input id="sel-label" type="text" />
-          </label>
-          <div class="field-row">
-            <label class="field">
-              <span id="lbl-sel-x">X (m)</span>
-              <input id="sel-x" type="number" step="0.1" />
-            </label>
-            <label class="field">
-              <span id="lbl-sel-y">Y (m)</span>
-              <input id="sel-y" type="number" step="0.1" />
-            </label>
-          </div>
-          <div class="field-row">
-            <label class="field">
-              <span id="lbl-sel-w">Ancho (m)</span>
-              <input id="sel-w" type="number" min="0.5" step="0.1" />
-            </label>
-            <label class="field" id="field-sel-h">
-              <span id="lbl-sel-h">Alto (m)</span>
-              <input id="sel-h" type="number" min="0.5" step="0.1" />
-            </label>
-          </div>
-          <div id="field-sel-rot" class="hidden">
-            <label class="field">
-              <span>Rotación (°)</span>
-              <input id="sel-rot" type="number" step="1" value="0" />
-            </label>
-            <div class="btn-row rot-btns">
-              <button type="button" id="btn-rot-ccw" class="btn ghost">−15°</button>
-              <button type="button" id="btn-rot-cw" class="btn ghost">+15°</button>
+          <section class="panel">
+            <h2>Unidades</h2>
+            <div class="tool-row" role="group" aria-label="Unidad">
+              <button type="button" class="unit-btn active" data-unit="m" id="unit-m">Metros (m)</button>
+              <button type="button" class="unit-btn" data-unit="ft" id="unit-ft">Pies (ft)</button>
             </div>
-            <button type="button" id="btn-align-right" class="btn ghost">Alinear al lado derecho</button>
-          </div>
-          <label class="field">
-            <span>Color</span>
-            <input id="sel-color" type="color" />
-          </label>
-          <button type="button" id="btn-delete" class="btn danger">Eliminar área</button>
-        </div>
-      </section>
+          </section>
 
-      <section class="panel">
-        <h2>Datos</h2>
-        <div class="btn-row">
-          <button type="button" id="btn-export" class="btn">Exportar JSON</button>
-          <button type="button" id="btn-import" class="btn">Importar</button>
-          <input id="import-file" type="file" accept="application/json,.json" hidden />
-        </div>
-        <p class="hint">Al importar puedes <strong>combinar</strong> (añade sin borrar lo tuyo) o <strong>reemplazar</strong>.</p>
-        <button type="button" id="btn-clear" class="btn ghost danger-text">Borrar todas las áreas</button>
-      </section>
+          <section class="panel">
+            <h2>Herramientas</h2>
+            <div class="tool-row tools-4" role="group" aria-label="Modo">
+              <button type="button" class="tool active" data-tool="select" title="Seleccionar / mover (V)">
+                Seleccionar
+              </button>
+              <button type="button" class="tool" data-tool="rect" title="Dibujar rectángulo (R)">
+                Rectángulo
+              </button>
+              <button type="button" class="tool" data-tool="circle" title="Dibujar círculo (C)">
+                Círculo
+              </button>
+              <button type="button" class="tool" data-tool="tree" title="Plantar árbol (T)">
+                Árbol
+              </button>
+            </div>
+          </section>
 
-      <section class="panel trees-panel">
-        <h2>Árboles <span class="mono" id="tree-count">13</span></h2>
-        <div class="btn-row tree-lock-row">
-          <button type="button" id="btn-lock-all" class="btn ghost" title="Bloquear posición de todos">Bloquear todos</button>
-          <button type="button" id="btn-unlock-all" class="btn ghost" title="Desbloquear todos">Desbloquear</button>
-        </div>
-        <label class="field">
-          <span>Nombre (opcional)</span>
-          <input id="tree-name" type="text" placeholder="ej. Mango, aguacate…" />
-        </label>
-        <div class="field-row">
-          <label class="field">
-            <span id="lbl-tree-x">X (m)</span>
-            <input id="tree-x" type="number" step="0.1" value="5" />
-          </label>
-          <label class="field">
-            <span id="lbl-tree-y">Y (m)</span>
-            <input id="tree-y" type="number" step="0.1" value="5" />
-          </label>
-        </div>
-        <div class="btn-row">
-          <button type="button" id="btn-add-tree" class="btn primary" style="margin-top:0">Agregar</button>
-          <button type="button" id="btn-tree-tool" class="btn">Clic en mapa</button>
-        </div>
-        <p class="hint">Activa <strong>Árbol</strong> y haz clic en el plano, o usa Agregar con coordenadas. Los bloqueados no se pueden arrastrar.</p>
-
-        <div id="tree-selection" class="tree-selection hidden">
-          <h3>Árbol seleccionado</h3>
-          <label class="check">
-            <input id="sel-tree-locked" type="checkbox" />
-            Posición bloqueada
-          </label>
-          <label class="field">
-            <span>Nombre</span>
-            <input id="sel-tree-name" type="text" placeholder="Sin nombre" />
-          </label>
-          <div class="field-row">
+          <section class="panel">
+            <h2>Nuevo área</h2>
+            <div class="tool-row" role="group" aria-label="Forma al colocar">
+              <button type="button" class="shape-btn active" data-place-shape="rect">Rectángulo</button>
+              <button type="button" class="shape-btn" data-place-shape="circle">Círculo</button>
+            </div>
             <label class="field">
-              <span id="lbl-sel-tree-x">X (m)</span>
-              <input id="sel-tree-x" type="number" step="0.1" />
+              <span>Etiqueta</span>
+              <input id="area-label" type="text" placeholder="ej. Shed, piscina…" value="Área" />
             </label>
+            <div class="field-row">
+              <label class="field">
+                <span id="lbl-area-w">Ancho (m)</span>
+                <input id="area-w" type="number" min="0.5" step="0.1" value="4" />
+              </label>
+              <label class="field" id="field-area-h">
+                <span id="lbl-area-h">Alto (m)</span>
+                <input id="area-h" type="number" min="0.5" step="0.1" value="3" />
+              </label>
+            </div>
             <label class="field">
-              <span id="lbl-sel-tree-y">Y (m)</span>
-              <input id="sel-tree-y" type="number" step="0.1" />
+              <span>Color</span>
+              <input id="area-color" type="color" value="#2f6f4e" />
             </label>
+            <button type="button" id="btn-place" class="btn primary">Colocar en el centro</button>
+            <p class="hint" id="area-hint">Clic derecho en un área → <strong>Diseñar estructura</strong> para framing.</p>
+          </section>
+
+          <section class="panel">
+            <h2>Vista</h2>
+            <label class="check">
+              <input id="toggle-grid" type="checkbox" checked />
+              <span id="lbl-grid">Cuadrícula 1 m</span>
+            </label>
+            <label class="check">
+              <input id="toggle-trees" type="checkbox" checked />
+              Árboles
+            </label>
+            <label class="check">
+              <input id="toggle-dims" type="checkbox" checked />
+              Cotas del solar
+            </label>
+            <div class="zoom-row">
+              <button type="button" id="btn-zoom-out" class="btn ghost" title="Alejar">−</button>
+              <span id="zoom-label" class="mono">100%</span>
+              <button type="button" id="btn-zoom-in" class="btn ghost" title="Acercar">+</button>
+              <button type="button" id="btn-fit" class="btn ghost">Ajustar</button>
+            </div>
+          </section>
+
+          <section class="panel">
+            <h2>Área seleccionada</h2>
+            <div id="selection-empty" class="muted">Ninguna seleccionada</div>
+            <div id="selection-editor" class="hidden">
+              <label class="field">
+                <span>Etiqueta</span>
+                <input id="sel-label" type="text" />
+              </label>
+              <div class="field-row">
+                <label class="field">
+                  <span id="lbl-sel-x">X (m)</span>
+                  <input id="sel-x" type="number" step="0.1" />
+                </label>
+                <label class="field">
+                  <span id="lbl-sel-y">Y (m)</span>
+                  <input id="sel-y" type="number" step="0.1" />
+                </label>
+              </div>
+              <div class="field-row">
+                <label class="field">
+                  <span id="lbl-sel-w">Ancho (m)</span>
+                  <input id="sel-w" type="number" min="0.5" step="0.1" />
+                </label>
+                <label class="field" id="field-sel-h">
+                  <span id="lbl-sel-h">Alto (m)</span>
+                  <input id="sel-h" type="number" min="0.5" step="0.1" />
+                </label>
+              </div>
+              <div id="field-sel-rot" class="hidden">
+                <label class="field">
+                  <span>Rotación (°)</span>
+                  <input id="sel-rot" type="number" step="1" value="0" />
+                </label>
+                <div class="btn-row rot-btns">
+                  <button type="button" id="btn-rot-ccw" class="btn ghost">−15°</button>
+                  <button type="button" id="btn-rot-cw" class="btn ghost">+15°</button>
+                </div>
+                <button type="button" id="btn-align-right" class="btn ghost">Alinear al lado derecho</button>
+              </div>
+              <label class="field">
+                <span>Color</span>
+                <input id="sel-color" type="color" />
+              </label>
+              <button type="button" id="btn-open-framing" class="btn primary">Diseñar estructura</button>
+              <button type="button" id="btn-delete" class="btn danger">Eliminar área</button>
+            </div>
+          </section>
+
+          <section class="panel">
+            <h2>Datos</h2>
+            <div class="btn-row">
+              <button type="button" id="btn-export" class="btn">Exportar JSON</button>
+              <button type="button" id="btn-import" class="btn">Importar</button>
+              <input id="import-file" type="file" accept="application/json,.json" hidden />
+            </div>
+            <p class="hint">Al importar puedes <strong>combinar</strong> o <strong>reemplazar</strong>. Incluye estructuras.</p>
+            <button type="button" id="btn-clear" class="btn ghost danger-text">Borrar todas las áreas</button>
+          </section>
+
+          <section class="panel trees-panel">
+            <h2>Árboles <span class="mono" id="tree-count">13</span></h2>
+            <div class="btn-row tree-lock-row">
+              <button type="button" id="btn-lock-all" class="btn ghost" title="Bloquear posición de todos">Bloquear todos</button>
+              <button type="button" id="btn-unlock-all" class="btn ghost" title="Desbloquear todos">Desbloquear</button>
+            </div>
+            <label class="field">
+              <span>Nombre (opcional)</span>
+              <input id="tree-name" type="text" placeholder="ej. Mango, aguacate…" />
+            </label>
+            <div class="field-row">
+              <label class="field">
+                <span id="lbl-tree-x">X (m)</span>
+                <input id="tree-x" type="number" step="0.1" value="5" />
+              </label>
+              <label class="field">
+                <span id="lbl-tree-y">Y (m)</span>
+                <input id="tree-y" type="number" step="0.1" value="5" />
+              </label>
+            </div>
+            <div class="btn-row">
+              <button type="button" id="btn-add-tree" class="btn primary" style="margin-top:0">Agregar</button>
+              <button type="button" id="btn-tree-tool" class="btn">Clic en mapa</button>
+            </div>
+            <p class="hint">Los bloqueados no se pueden arrastrar.</p>
+
+            <div id="tree-selection" class="tree-selection hidden">
+              <h3>Árbol seleccionado</h3>
+              <label class="check">
+                <input id="sel-tree-locked" type="checkbox" />
+                Posición bloqueada
+              </label>
+              <label class="field">
+                <span>Nombre</span>
+                <input id="sel-tree-name" type="text" placeholder="Sin nombre" />
+              </label>
+              <div class="field-row">
+                <label class="field">
+                  <span id="lbl-sel-tree-x">X (m)</span>
+                  <input id="sel-tree-x" type="number" step="0.1" />
+                </label>
+                <label class="field">
+                  <span id="lbl-sel-tree-y">Y (m)</span>
+                  <input id="sel-tree-y" type="number" step="0.1" />
+                </label>
+              </div>
+              <button type="button" id="btn-delete-tree" class="btn danger">Eliminar árbol</button>
+            </div>
+
+            <ol id="tree-list" class="trees-list"></ol>
+          </section>
+
+          <footer class="sidebar-foot">
+            <p>Clic derecho en un área → diseñar framing del shed, etc.</p>
+            <p>Atajos: V · R · C · T · [ ] rotar · Delete</p>
+          </footer>
+        </aside>
+
+        <main class="stage-wrap">
+          <div class="stage-bar">
+            <span id="cursor-readout" class="mono">x — · y —</span>
+            <span id="status" class="status">Listo</span>
           </div>
-          <button type="button" id="btn-delete-tree" class="btn danger">Eliminar árbol</button>
-        </div>
-
-        <ol id="tree-list" class="trees-list"></ol>
-      </section>
-
-      <footer class="sidebar-foot">
-        <p>Eje X: izquierda → derecha · Eje Y: frente (abajo) → fondo (arriba)</p>
-        <p>Atajos: V seleccionar · R rect · C círculo · T árbol · [ ] rotar · Delete</p>
-      </footer>
-    </aside>
-
-    <main class="stage-wrap">
-      <div class="stage-bar">
-        <span id="cursor-readout" class="mono">x — · y —</span>
-        <span id="status" class="status">Listo</span>
+          <div id="stage" class="stage" tabindex="0">
+            <canvas id="canvas"></canvas>
+          </div>
+        </main>
       </div>
-      <div id="stage" class="stage" tabindex="0">
-        <canvas id="canvas"></canvas>
+    </div>
+
+    <div id="view-framing" class="view">
+      <div class="app framing-app">
+        <aside class="sidebar">
+          <header class="brand">
+            <p class="brand-kicker">Framing · plan view</p>
+            <h1 id="framing-title">Estructura</h1>
+            <p class="brand-meta" id="framing-meta">Abre un área desde Terreno para empezar</p>
+          </header>
+
+          <section class="panel" id="framing-empty-panel">
+            <p class="hint" style="margin:0">
+              En <strong>Terreno</strong>, dibuja un shed/área, selecciónala y pulsa
+              <strong>Diseñar estructura</strong> (o clic derecho).
+            </p>
+            <button type="button" id="btn-framing-blank" class="btn primary">Nuevo framing en blanco (10×12 ft)</button>
+          </section>
+
+          <div id="framing-tools-wrap" class="hidden">
+            <section class="panel">
+              <h2>Herramientas</h2>
+              <div class="tool-row tools-4" role="group">
+                <button type="button" class="tool active" data-ftool="select">Seleccionar</button>
+                <button type="button" class="tool" data-ftool="lumber">Palo</button>
+                <button type="button" class="tool" data-ftool="sheet">Plancha</button>
+                <button type="button" class="tool" data-ftool="wall">Muro auto</button>
+              </div>
+              <p class="hint">Palo/plancha: arrastra. Muro auto: traza la línea de la pared (plates + studs).</p>
+            </section>
+
+            <section class="panel">
+              <h2>Madera</h2>
+              <label class="field">
+                <span>Perfil</span>
+                <select id="framing-profile"></select>
+              </label>
+              <label class="field">
+                <span>Espaciado studs (in)</span>
+                <select id="framing-oc">
+                  <option value="16" selected>16″ O.C.</option>
+                  <option value="24">24″ O.C.</option>
+                  <option value="12">12″ O.C.</option>
+                </select>
+              </label>
+              <label class="check">
+                <input id="framing-snap" type="checkbox" checked />
+                Snap 1″
+              </label>
+              <label class="check">
+                <input id="framing-grid" type="checkbox" checked />
+                Cuadrícula 12″
+              </label>
+            </section>
+
+            <section class="panel">
+              <h2>Huella</h2>
+              <div class="field-row">
+                <label class="field">
+                  <span>Ancho (ft)</span>
+                  <input id="framing-w-ft" type="number" min="2" step="0.1" />
+                </label>
+                <label class="field">
+                  <span>Fondo (ft)</span>
+                  <input id="framing-d-ft" type="number" min="2" step="0.1" />
+                </label>
+              </div>
+              <button type="button" id="btn-framing-fit" class="btn ghost">Ajustar vista</button>
+            </section>
+
+            <section class="panel">
+              <h2>Pieza seleccionada</h2>
+              <div id="framing-sel-empty" class="muted">Ninguna</div>
+              <div id="framing-sel-editor" class="hidden">
+                <p id="framing-sel-info" class="mono" style="margin:0 0 0.5rem;font-size:0.82rem"></p>
+                <button type="button" id="btn-framing-del" class="btn danger">Eliminar pieza</button>
+              </div>
+            </section>
+
+            <section class="panel">
+              <h2>Lista de corte</h2>
+              <div id="framing-bom" class="bom mono"></div>
+              <button type="button" id="btn-framing-clear" class="btn ghost danger-text">Vaciar framing</button>
+            </section>
+          </div>
+        </aside>
+
+        <main class="stage-wrap">
+          <div class="stage-bar">
+            <span id="framing-cursor" class="mono">—</span>
+            <span id="framing-status" class="status">Estructura</span>
+          </div>
+          <div id="framing-stage" class="stage" tabindex="0">
+            <canvas id="framing-canvas"></canvas>
+          </div>
+        </main>
       </div>
-    </main>
+    </div>
+  </div>
+
+  <div id="ctx-menu" class="ctx-menu hidden" role="menu">
+    <button type="button" data-ctx="framing">Diseñar estructura…</button>
+    <button type="button" data-ctx="label">Renombrar…</button>
+    <button type="button" data-ctx="delete" class="danger">Eliminar área</button>
   </div>
 
   <dialog id="label-dialog">
@@ -248,8 +362,8 @@
     <h3>¿Cómo importar?</h3>
     <p class="hint" id="import-dialog-summary" style="margin-top:0"></p>
     <p class="hint">
-      <strong>Combinar</strong> añade lo importado y deja lo tuyo (luego borras lo que no quieras).<br />
-      <strong>Reemplazar</strong> borra tu diseño actual y deja solo el archivo.
+      <strong>Combinar</strong> añade lo importado y deja lo tuyo.<br />
+      <strong>Reemplazar</strong> borra tu diseño actual.
     </p>
     <menu class="import-menu">
       <button type="button" class="btn primary" id="import-merge">Combinar</button>
@@ -258,6 +372,7 @@
     </menu>
   </dialog>
 
+  <script src="framing.js"></script>
   <script src="app.js"></script>
 </body>
 </html>

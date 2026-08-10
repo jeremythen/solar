@@ -99,6 +99,7 @@
     btnAlignRight: document.getElementById("btn-align-right"),
     selColor: document.getElementById("sel-color"),
     btnDelete: document.getElementById("btn-delete"),
+    btnOpenFraming: document.getElementById("btn-open-framing"),
     btnExport: document.getElementById("btn-export"),
     btnImport: document.getElementById("btn-import"),
     importFile: document.getElementById("import-file"),
@@ -108,6 +109,8 @@
     importReplace: document.getElementById("import-replace"),
     importCancel: document.getElementById("import-cancel"),
     btnClear: document.getElementById("btn-clear"),
+    ctxMenu: document.getElementById("ctx-menu"),
+    viewLot: document.getElementById("view-lot"),
     treeList: document.getElementById("tree-list"),
     treeCount: document.getElementById("tree-count"),
     cursorReadout: document.getElementById("cursor-readout"),
@@ -132,6 +135,7 @@
     selectedTreeId: null,
     editingTreeId: null,
     pendingImport: null,
+    ctxAreaId: null,
     showGrid: true,
     showTrees: true,
     showDims: true,
@@ -430,7 +434,9 @@
   }
 
   function resize() {
+    if (els.viewLot && !els.viewLot.classList.contains("active")) return;
     const rect = stage.getBoundingClientRect();
+    if (rect.width < 2 || rect.height < 2) return;
     state.cssW = rect.width;
     state.cssH = rect.height;
     state.dpr = Math.min(window.devicePixelRatio || 1, 2);
@@ -632,7 +638,8 @@
         wrapText(ctx, label, center.x, center.y - fontSize * 0.1, Math.min(area.w, area.h) * s * 0.85, fontSize * 1.2);
 
         const rotLabel = area.rot ? ` · ${normalizeDeg(area.rot)}°` : "";
-        const meta = `${fmtLen(area.w, 1)}×${fmtLen(area.h, 1)} ${unitSuffix()}${rotLabel}`;
+        const framed = window.SolarFraming?.hasStructure?.(area.id) ? " · framing" : "";
+        const meta = `${fmtLen(area.w, 1)}×${fmtLen(area.h, 1)} ${unitSuffix()}${rotLabel}${framed}`;
         ctx.font = `500 ${Math.max(9, fontSize * 0.72)}px "IBM Plex Mono", monospace`;
         ctx.fillStyle = "rgba(18,32,24,0.7)";
         ctx.fillText(meta, center.x, center.y + fontSize * 1.05);
@@ -1625,13 +1632,46 @@
     draw();
   }
 
+  function openFramingForArea(area) {
+    if (!area) return;
+    if (isCircle(area)) {
+      // footprint cuadrada a partir del diámetro
+    }
+    if (!window.SolarFraming) {
+      els.status.textContent = "Módulo de estructura no cargado";
+      return;
+    }
+    window.SolarFraming.openFromArea(area);
+  }
+
+  function hideCtxMenu() {
+    els.ctxMenu.classList.add("hidden");
+    state.ctxAreaId = null;
+  }
+
+  function showCtxMenu(clientX, clientY, area) {
+    state.ctxAreaId = area.id;
+    selectArea(area.id);
+    els.ctxMenu.classList.remove("hidden");
+    const pad = 6;
+    const mw = els.ctxMenu.offsetWidth || 200;
+    const mh = els.ctxMenu.offsetHeight || 120;
+    let left = clientX;
+    let top = clientY;
+    if (left + mw > window.innerWidth - pad) left = window.innerWidth - mw - pad;
+    if (top + mh > window.innerHeight - pad) top = window.innerHeight - mh - pad;
+    els.ctxMenu.style.left = `${left}px`;
+    els.ctxMenu.style.top = `${top}px`;
+  }
+
   function exportJSON() {
     const payload = {
       plot: PLOT,
       trees: state.trees,
       areas: state.areas,
+      structures: window.SolarFraming?.getStructures?.() || {},
       unit: state.unit,
-      unitsNote: "Todas las medidas en areas/trees/plot están en metros.",
+      unitsNote: "Medidas de areas/trees/plot en metros. Framing (structures) en pulgadas.",
       exportedAt: new Date().toISOString(),
     };
     const blob = new Blob([JSON.stringify(payload, null, 2)], { type: "application/json" });
@@ -1693,7 +1733,6 @@
         addedTrees = trees.length;
       }
     } else {
-      // merge
       if (Array.isArray(data.areas)) {
         for (const a of areas) {
           state.areas.push({
@@ -1708,7 +1747,6 @@
         for (const t of trees) {
           const local = findNearbyTree(t.x, t.y, state.trees);
           if (local) {
-            // Misma posición: completar nombre si el local no tiene y el importado sí
             if (!local.name && t.name) {
               local.name = t.name;
               namedTrees += 1;
@@ -1723,6 +1761,10 @@
         }
         saveTrees();
       }
+    }
+
+    if (data.structures && typeof data.structures === "object" && window.SolarFraming) {
+      window.SolarFraming.setStructures(data.structures, { merge: mode === "merge" });
     }
 
     state.selectedId = null;
@@ -1831,7 +1873,40 @@
   els.btnZoomOut.addEventListener("click", () => setZoom(state.userZoom / 1.15));
   els.btnFit.addEventListener("click", fitView);
   els.btnDelete.addEventListener("click", deleteSelected);
+  els.btnOpenFraming.addEventListener("click", () => {
+    const a = getSelected();
+    if (a) openFramingForArea(a);
+  });
   els.btnExport.addEventListener("click", exportJSON);
+
+  canvas.addEventListener("contextmenu", (e) => {
+    e.preventDefault();
+    const { sx, sy } = pointerPos(e);
+    const w = screenToWorld(sx, sy);
+    const hit = hitArea(w.x, w.y);
+    if (hit) showCtxMenu(e.clientX, e.clientY, hit);
+    else hideCtxMenu();
+  });
+  document.addEventListener("click", (e) => {
+    if (!els.ctxMenu.contains(e.target)) hideCtxMenu();
+  });
+  els.ctxMenu.addEventListener("click", (e) => {
+    const btn = e.target.closest("[data-ctx]");
+    if (!btn) return;
+    const area = state.areas.find((a) => a.id === state.ctxAreaId);
+    const action = btn.dataset.ctx;
+    hideCtxMenu();
+    if (!area) return;
+    if (action === "framing") openFramingForArea(area);
+    if (action === "label") {
+      selectArea(area.id);
+      openLabelDialog(area);
+    }
+    if (action === "delete") {
+      selectArea(area.id);
+      deleteSelected();
+    }
+  });
   els.btnImport.addEventListener("click", () => els.importFile.click());
   els.importFile.addEventListener("change", () => {
     const file = els.importFile.files?.[0];
@@ -1964,6 +2039,16 @@
     }
   }
   setPlaceShape(state.placeShape);
+  window.SolarLot = {
+    redraw() {
+      if (els.viewLot?.classList.contains("active")) {
+        resize();
+        draw();
+      }
+    },
+    getAreas: () => state.areas,
+  };
+
   refreshUnitUI();
   renderTreeList();
   setTool("select");

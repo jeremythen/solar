@@ -22,4 +22,15 @@ Cada navegador guarda su propio plano (localStorage). Para compartir:
 
 1. **Exportar JSON**
 2. Enviar el archivo
-3. En el otro dispositivo: **Importar**
+3. En el otro dispositivo: **Importar** (combinar o reemplazar)
+
+## Estructura / framing
+
+Pestaña **Estructura**: clic derecho en un área del terreno → **Diseñar estructura**.
+
+- Palos (2×4, 2×6, 4×4…)
+- Planchas 4×8
+- Muro auto (plates + studs a 16″/24″ O.C.)
+- Lista de corte
+
+El render 3D queda para más adelante.
