@@ -1,0 +1,248 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Solar 241 — Plano de diseño</title>
+  <link rel="stylesheet" href="styles.css" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,400;0,9..40,500;0,9..40,600;0,9..40,700;1,9..40,400&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet" />
+</head>
+<body>
+  <div class="app">
+    <aside class="sidebar">
+      <header class="brand">
+        <p class="brand-kicker" id="brand-kicker">Lote 241 · 552.83 m²</p>
+        <h1>Solar</h1>
+        <p class="brand-meta" id="brand-meta">Frente 24.20 m · Fondo 20.02 m · Prof. 25.01 m</p>
+      </header>
+
+      <section class="panel">
+        <h2>Unidades</h2>
+        <div class="tool-row" role="group" aria-label="Unidad">
+          <button type="button" class="unit-btn active" data-unit="m" id="unit-m">Metros (m)</button>
+          <button type="button" class="unit-btn" data-unit="ft" id="unit-ft">Pies (ft)</button>
+        </div>
+      </section>
+
+      <section class="panel">
+        <h2>Herramientas</h2>
+        <div class="tool-row tools-4" role="group" aria-label="Modo">
+          <button type="button" class="tool active" data-tool="select" title="Seleccionar / mover (V)">
+            Seleccionar
+          </button>
+          <button type="button" class="tool" data-tool="rect" title="Dibujar rectángulo (R)">
+            Rectángulo
+          </button>
+          <button type="button" class="tool" data-tool="circle" title="Dibujar círculo (C)">
+            Círculo
+          </button>
+          <button type="button" class="tool" data-tool="tree" title="Plantar árbol (T)">
+            Árbol
+          </button>
+        </div>
+      </section>
+
+      <section class="panel">
+        <h2>Nuevo área</h2>
+        <div class="tool-row" role="group" aria-label="Forma al colocar">
+          <button type="button" class="shape-btn active" data-place-shape="rect">Rectángulo</button>
+          <button type="button" class="shape-btn" data-place-shape="circle">Círculo</button>
+        </div>
+        <label class="field">
+          <span>Etiqueta</span>
+          <input id="area-label" type="text" placeholder="ej. Shed, piscina…" value="Área" />
+        </label>
+        <div class="field-row">
+          <label class="field">
+            <span id="lbl-area-w">Ancho (m)</span>
+            <input id="area-w" type="number" min="0.5" step="0.1" value="4" />
+          </label>
+          <label class="field" id="field-area-h">
+            <span id="lbl-area-h">Alto (m)</span>
+            <input id="area-h" type="number" min="0.5" step="0.1" value="3" />
+          </label>
+        </div>
+        <label class="field">
+          <span>Color</span>
+          <input id="area-color" type="color" value="#2f6f4e" />
+        </label>
+        <button type="button" id="btn-place" class="btn primary">Colocar en el centro</button>
+        <p class="hint" id="area-hint">O dibuja con <strong>Rectángulo</strong> / <strong>Círculo</strong> en el plano. El círculo se arrastra desde el centro.</p>
+      </section>
+
+      <section class="panel">
+        <h2>Vista</h2>
+        <label class="check">
+          <input id="toggle-grid" type="checkbox" checked />
+          <span id="lbl-grid">Cuadrícula 1 m</span>
+        </label>
+        <label class="check">
+          <input id="toggle-trees" type="checkbox" checked />
+          Árboles
+        </label>
+        <label class="check">
+          <input id="toggle-dims" type="checkbox" checked />
+          Cotas del solar
+        </label>
+        <div class="zoom-row">
+          <button type="button" id="btn-zoom-out" class="btn ghost" title="Alejar">−</button>
+          <span id="zoom-label" class="mono">100%</span>
+          <button type="button" id="btn-zoom-in" class="btn ghost" title="Acercar">+</button>
+          <button type="button" id="btn-fit" class="btn ghost">Ajustar</button>
+        </div>
+      </section>
+
+      <section class="panel">
+        <h2>Área seleccionada</h2>
+        <div id="selection-empty" class="muted">Ninguna seleccionada</div>
+        <div id="selection-editor" class="hidden">
+          <label class="field">
+            <span>Etiqueta</span>
+            <input id="sel-label" type="text" />
+          </label>
+          <div class="field-row">
+            <label class="field">
+              <span id="lbl-sel-x">X (m)</span>
+              <input id="sel-x" type="number" step="0.1" />
+            </label>
+            <label class="field">
+              <span id="lbl-sel-y">Y (m)</span>
+              <input id="sel-y" type="number" step="0.1" />
+            </label>
+          </div>
+          <div class="field-row">
+            <label class="field">
+              <span id="lbl-sel-w">Ancho (m)</span>
+              <input id="sel-w" type="number" min="0.5" step="0.1" />
+            </label>
+            <label class="field" id="field-sel-h">
+              <span id="lbl-sel-h">Alto (m)</span>
+              <input id="sel-h" type="number" min="0.5" step="0.1" />
+            </label>
+          </div>
+          <div id="field-sel-rot" class="hidden">
+            <label class="field">
+              <span>Rotación (°)</span>
+              <input id="sel-rot" type="number" step="1" value="0" />
+            </label>
+            <div class="btn-row rot-btns">
+              <button type="button" id="btn-rot-ccw" class="btn ghost">−15°</button>
+              <button type="button" id="btn-rot-cw" class="btn ghost">+15°</button>
+            </div>
+            <button type="button" id="btn-align-right" class="btn ghost">Alinear al lado derecho</button>
+          </div>
+          <label class="field">
+            <span>Color</span>
+            <input id="sel-color" type="color" />
+          </label>
+          <button type="button" id="btn-delete" class="btn danger">Eliminar área</button>
+        </div>
+      </section>
+
+      <section class="panel">
+        <h2>Datos</h2>
+        <div class="btn-row">
+          <button type="button" id="btn-export" class="btn">Exportar JSON</button>
+          <button type="button" id="btn-import" class="btn">Importar</button>
+          <input id="import-file" type="file" accept="application/json,.json" hidden />
+        </div>
+        <button type="button" id="btn-clear" class="btn ghost danger-text">Borrar todas las áreas</button>
+      </section>
+
+      <section class="panel trees-panel">
+        <h2>Árboles <span class="mono" id="tree-count">13</span></h2>
+        <div class="btn-row tree-lock-row">
+          <button type="button" id="btn-lock-all" class="btn ghost" title="Bloquear posición de todos">Bloquear todos</button>
+          <button type="button" id="btn-unlock-all" class="btn ghost" title="Desbloquear todos">Desbloquear</button>
+        </div>
+        <label class="field">
+          <span>Nombre (opcional)</span>
+          <input id="tree-name" type="text" placeholder="ej. Mango, aguacate…" />
+        </label>
+        <div class="field-row">
+          <label class="field">
+            <span id="lbl-tree-x">X (m)</span>
+            <input id="tree-x" type="number" step="0.1" value="5" />
+          </label>
+          <label class="field">
+            <span id="lbl-tree-y">Y (m)</span>
+            <input id="tree-y" type="number" step="0.1" value="5" />
+          </label>
+        </div>
+        <div class="btn-row">
+          <button type="button" id="btn-add-tree" class="btn primary" style="margin-top:0">Agregar</button>
+          <button type="button" id="btn-tree-tool" class="btn">Clic en mapa</button>
+        </div>
+        <p class="hint">Activa <strong>Árbol</strong> y haz clic en el plano, o usa Agregar con coordenadas. Los bloqueados no se pueden arrastrar.</p>
+
+        <div id="tree-selection" class="tree-selection hidden">
+          <h3>Árbol seleccionado</h3>
+          <label class="check">
+            <input id="sel-tree-locked" type="checkbox" />
+            Posición bloqueada
+          </label>
+          <label class="field">
+            <span>Nombre</span>
+            <input id="sel-tree-name" type="text" placeholder="Sin nombre" />
+          </label>
+          <div class="field-row">
+            <label class="field">
+              <span id="lbl-sel-tree-x">X (m)</span>
+              <input id="sel-tree-x" type="number" step="0.1" />
+            </label>
+            <label class="field">
+              <span id="lbl-sel-tree-y">Y (m)</span>
+              <input id="sel-tree-y" type="number" step="0.1" />
+            </label>
+          </div>
+          <button type="button" id="btn-delete-tree" class="btn danger">Eliminar árbol</button>
+        </div>
+
+        <ol id="tree-list" class="trees-list"></ol>
+      </section>
+
+      <footer class="sidebar-foot">
+        <p>Eje X: izquierda → derecha · Eje Y: frente (abajo) → fondo (arriba)</p>
+        <p>Atajos: V seleccionar · R rect · C círculo · T árbol · [ ] rotar · Delete</p>
+      </footer>
+    </aside>
+
+    <main class="stage-wrap">
+      <div class="stage-bar">
+        <span id="cursor-readout" class="mono">x — · y —</span>
+        <span id="status" class="status">Listo</span>
+      </div>
+      <div id="stage" class="stage" tabindex="0">
+        <canvas id="canvas"></canvas>
+      </div>
+    </main>
+  </div>
+
+  <dialog id="label-dialog">
+    <form method="dialog" id="label-form">
+      <h3>Etiqueta del área</h3>
+      <input id="dialog-label" type="text" required />
+      <menu>
+        <button type="submit" class="btn primary" value="ok">Guardar</button>
+        <button type="button" class="btn ghost" id="dialog-cancel">Cancelar</button>
+      </menu>
+    </form>
+  </dialog>
+
+  <dialog id="tree-dialog">
+    <form method="dialog" id="tree-form">
+      <h3>Nombre del árbol</h3>
+      <p class="hint" style="margin-top:0">Opcional — puedes dejarlo vacío.</p>
+      <input id="dialog-tree-name" type="text" placeholder="ej. Guanábana" />
+      <menu>
+        <button type="submit" class="btn primary" value="ok">Guardar</button>
+        <button type="button" class="btn ghost" id="tree-dialog-cancel">Cancelar</button>
+      </menu>
+    </form>
+  </dialog>
+
+  <script src="app.js"></script>
+</body>
+</html>
