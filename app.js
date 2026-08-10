@@ -102,6 +102,11 @@
     btnExport: document.getElementById("btn-export"),
     btnImport: document.getElementById("btn-import"),
     importFile: document.getElementById("import-file"),
+    importDialog: document.getElementById("import-dialog"),
+    importDialogSummary: document.getElementById("import-dialog-summary"),
+    importMerge: document.getElementById("import-merge"),
+    importReplace: document.getElementById("import-replace"),
+    importCancel: document.getElementById("import-cancel"),
     btnClear: document.getElementById("btn-clear"),
     treeList: document.getElementById("tree-list"),
     treeCount: document.getElementById("tree-count"),
@@ -126,6 +131,7 @@
     selectedId: null,
     selectedTreeId: null,
     editingTreeId: null,
+    pendingImport: null,
     showGrid: true,
     showTrees: true,
     showDims: true,
@@ -1646,27 +1652,95 @@
         if (!Array.isArray(data.areas) && !Array.isArray(data.trees)) {
           throw new Error("Falta areas[] o trees[]");
         }
-        if (Array.isArray(data.areas)) {
-          state.areas = data.areas.map(normalizeArea).filter(Boolean);
-          saveAreas();
-        }
-        if (Array.isArray(data.trees)) {
-          state.trees = data.trees.map((t, i) => normalizeTree(t, i + 1));
-          saveTrees();
-        }
-        state.selectedId = null;
-        state.selectedTreeId = null;
-        if (data.unit === "m" || data.unit === "ft") setUnit(data.unit, { convertInputs: false });
-        syncSelectionUI();
-        syncTreeSelectionUI();
-        renderTreeList();
-        draw();
-        els.status.textContent = `Importado: ${state.areas.length} áreas, ${state.trees.length} árboles`;
+        const areas = Array.isArray(data.areas)
+          ? data.areas.map(normalizeArea).filter(Boolean)
+          : [];
+        const trees = Array.isArray(data.trees)
+          ? data.trees.map((t, i) => normalizeTree(t, i + 1))
+          : [];
+        state.pendingImport = { data, areas, trees };
+        els.importDialogSummary.textContent = `Archivo: ${areas.length} áreas, ${trees.length} árboles. Tú tienes: ${state.areas.length} áreas, ${state.trees.length} árboles.`;
+        els.importDialog.showModal();
       } catch (err) {
+        state.pendingImport = null;
         els.status.textContent = `Error al importar: ${err.message}`;
       }
     };
     reader.readAsText(file);
+  }
+
+  function findNearbyTree(x, y, list, tol = 0.25) {
+    return list.find((t) => Math.hypot(t.x - x, t.y - y) <= tol) || null;
+  }
+
+  function applyImport(mode) {
+    const pending = state.pendingImport;
+    if (!pending) return;
+    const { data, areas, trees } = pending;
+    let addedAreas = 0;
+    let addedTrees = 0;
+    let namedTrees = 0;
+
+    if (mode === "replace") {
+      if (Array.isArray(data.areas)) {
+        state.areas = areas;
+        saveAreas();
+        addedAreas = areas.length;
+      }
+      if (Array.isArray(data.trees)) {
+        state.trees = trees;
+        saveTrees();
+        addedTrees = trees.length;
+      }
+    } else {
+      // merge
+      if (Array.isArray(data.areas)) {
+        for (const a of areas) {
+          state.areas.push({
+            ...a,
+            id: uid(),
+          });
+          addedAreas += 1;
+        }
+        saveAreas();
+      }
+      if (Array.isArray(data.trees)) {
+        for (const t of trees) {
+          const local = findNearbyTree(t.x, t.y, state.trees);
+          if (local) {
+            // Misma posición: completar nombre si el local no tiene y el importado sí
+            if (!local.name && t.name) {
+              local.name = t.name;
+              namedTrees += 1;
+            }
+            continue;
+          }
+          state.trees.push({
+            ...t,
+            id: nextTreeId(),
+          });
+          addedTrees += 1;
+        }
+        saveTrees();
+      }
+    }
+
+    state.selectedId = null;
+    state.selectedTreeId = null;
+    state.pendingImport = null;
+    if (data.unit === "m" || data.unit === "ft") setUnit(data.unit, { convertInputs: false });
+    syncSelectionUI();
+    syncTreeSelectionUI();
+    renderTreeList();
+    draw();
+
+    if (mode === "replace") {
+      els.status.textContent = `Reemplazado: ${state.areas.length} áreas, ${state.trees.length} árboles`;
+    } else {
+      const bits = [`+${addedAreas} áreas`, `+${addedTrees} árboles`];
+      if (namedTrees) bits.push(`${namedTrees} nombres aplicados`);
+      els.status.textContent = `Combinado: ${bits.join(", ")}`;
+    }
   }
 
   function renderTreeList() {
@@ -1763,6 +1837,19 @@
     const file = els.importFile.files?.[0];
     if (file) importJSON(file);
     els.importFile.value = "";
+  });
+  els.importMerge.addEventListener("click", () => {
+    applyImport("merge");
+    els.importDialog.close();
+  });
+  els.importReplace.addEventListener("click", () => {
+    applyImport("replace");
+    els.importDialog.close();
+  });
+  els.importCancel.addEventListener("click", () => {
+    state.pendingImport = null;
+    els.importDialog.close();
+    els.status.textContent = "Importación cancelada";
   });
   els.btnClear.addEventListener("click", () => {
     if (!state.areas.length) return;

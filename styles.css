@@ -558,6 +558,17 @@ dialog menu {
   padding: 0;
 }
 
+dialog menu.import-menu {
+  flex-direction: column;
+  align-items: stretch;
+  margin-top: 0.85rem;
+}
+
+dialog menu.import-menu .btn {
+  width: 100%;
+  margin: 0;
+}
+
 @media (max-width: 900px) {
   body {
     overflow: auto;

@@ -148,6 +148,7 @@
           <button type="button" id="btn-import" class="btn">Importar</button>
           <input id="import-file" type="file" accept="application/json,.json" hidden />
         </div>
+        <p class="hint">Al importar puedes <strong>combinar</strong> (añade sin borrar lo tuyo) o <strong>reemplazar</strong>.</p>
         <button type="button" id="btn-clear" class="btn ghost danger-text">Borrar todas las áreas</button>
       </section>
 
@@ -241,6 +242,20 @@
         <button type="button" class="btn ghost" id="tree-dialog-cancel">Cancelar</button>
       </menu>
     </form>
+  </dialog>
+
+  <dialog id="import-dialog">
+    <h3>¿Cómo importar?</h3>
+    <p class="hint" id="import-dialog-summary" style="margin-top:0"></p>
+    <p class="hint">
+      <strong>Combinar</strong> añade lo importado y deja lo tuyo (luego borras lo que no quieras).<br />
+      <strong>Reemplazar</strong> borra tu diseño actual y deja solo el archivo.
+    </p>
+    <menu class="import-menu">
+      <button type="button" class="btn primary" id="import-merge">Combinar</button>
+      <button type="button" class="btn danger" id="import-replace">Reemplazar</button>
+      <button type="button" class="btn ghost" id="import-cancel">Cancelar</button>
+    </menu>
   </dialog>
 
   <script src="app.js"></script>
