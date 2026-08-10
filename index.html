@@ -37,18 +37,10 @@
           <section class="panel">
             <h2>Herramientas</h2>
             <div class="tool-row tools-4" role="group" aria-label="Modo">
-              <button type="button" class="tool active" data-tool="select" title="Seleccionar / mover (V)">
-                Seleccionar
-              </button>
-              <button type="button" class="tool" data-tool="rect" title="Dibujar rectángulo (R)">
-                Rectángulo
-              </button>
-              <button type="button" class="tool" data-tool="circle" title="Dibujar círculo (C)">
-                Círculo
-              </button>
-              <button type="button" class="tool" data-tool="tree" title="Plantar árbol (T)">
-                Árbol
-              </button>
+              <button type="button" class="tool active" data-tool="select" title="Seleccionar / mover (V)">Seleccionar</button>
+              <button type="button" class="tool" data-tool="rect" title="Dibujar rectángulo (R)">Rectángulo</button>
+              <button type="button" class="tool" data-tool="circle" title="Dibujar círculo (C)">Círculo</button>
+              <button type="button" class="tool" data-tool="tree" title="Plantar árbol (T)">Árbol</button>
             </div>
           </section>
 
@@ -77,7 +69,7 @@
               <input id="area-color" type="color" value="#2f6f4e" />
             </label>
             <button type="button" id="btn-place" class="btn primary">Colocar en el centro</button>
-            <p class="hint" id="area-hint">Clic derecho en un área → <strong>Diseñar estructura</strong> para framing.</p>
+            <p class="hint" id="area-hint">Clic derecho en un área → <strong>Diseñar estructura</strong>.</p>
           </section>
 
           <section class="panel">
@@ -157,15 +149,15 @@
               <button type="button" id="btn-import" class="btn">Importar</button>
               <input id="import-file" type="file" accept="application/json,.json" hidden />
             </div>
-            <p class="hint">Al importar puedes <strong>combinar</strong> o <strong>reemplazar</strong>. Incluye estructuras.</p>
+            <p class="hint">Importar: <strong>combinar</strong> o <strong>reemplazar</strong> (incluye estructuras).</p>
             <button type="button" id="btn-clear" class="btn ghost danger-text">Borrar todas las áreas</button>
           </section>
 
           <section class="panel trees-panel">
             <h2>Árboles <span class="mono" id="tree-count">13</span></h2>
             <div class="btn-row tree-lock-row">
-              <button type="button" id="btn-lock-all" class="btn ghost" title="Bloquear posición de todos">Bloquear todos</button>
-              <button type="button" id="btn-unlock-all" class="btn ghost" title="Desbloquear todos">Desbloquear</button>
+              <button type="button" id="btn-lock-all" class="btn ghost">Bloquear todos</button>
+              <button type="button" id="btn-unlock-all" class="btn ghost">Desbloquear</button>
             </div>
             <label class="field">
               <span>Nombre (opcional)</span>
@@ -186,7 +178,6 @@
               <button type="button" id="btn-tree-tool" class="btn">Clic en mapa</button>
             </div>
             <p class="hint">Los bloqueados no se pueden arrastrar.</p>
-
             <div id="tree-selection" class="tree-selection hidden">
               <h3>Árbol seleccionado</h3>
               <label class="check">
@@ -209,13 +200,12 @@
               </div>
               <button type="button" id="btn-delete-tree" class="btn danger">Eliminar árbol</button>
             </div>
-
             <ol id="tree-list" class="trees-list"></ol>
           </section>
 
           <footer class="sidebar-foot">
-            <p>Clic derecho en un área → diseñar framing del shed, etc.</p>
-            <p>Atajos: V · R · C · T · [ ] rotar · Delete</p>
+            <p>Clic derecho en un área → framing completo (muros, piso, techo, 3D).</p>
+            <p>Atajos terreno: V · R · C · T · [ ] · Delete</p>
           </footer>
         </aside>
 
@@ -235,44 +225,87 @@
       <div class="app framing-app">
         <aside class="sidebar">
           <header class="brand">
-            <p class="brand-kicker">Framing · plan view</p>
+            <p class="brand-kicker">Framing · shed builder</p>
             <h1 id="framing-title">Estructura</h1>
             <p class="brand-meta" id="framing-meta">Abre un área desde Terreno para empezar</p>
           </header>
 
           <section class="panel" id="framing-empty-panel">
             <p class="hint" style="margin:0">
-              En <strong>Terreno</strong>, dibuja un shed/área, selecciónala y pulsa
-              <strong>Diseñar estructura</strong> (o clic derecho).
+              En <strong>Terreno</strong>, dibuja un shed, luego <strong>Diseñar estructura</strong>.
             </p>
-            <button type="button" id="btn-framing-blank" class="btn primary">Nuevo framing en blanco (10×12 ft)</button>
+            <button type="button" id="btn-framing-blank" class="btn primary">Nuevo framing 10×12 ft</button>
           </section>
 
           <div id="framing-tools-wrap" class="hidden">
             <section class="panel">
-              <h2>Herramientas</h2>
-              <div class="tool-row tools-4" role="group">
-                <button type="button" class="tool active" data-ftool="select">Seleccionar</button>
-                <button type="button" class="tool" data-ftool="lumber">Palo</button>
-                <button type="button" class="tool" data-ftool="sheet">Plancha</button>
-                <button type="button" class="tool" data-ftool="wall">Muro auto</button>
+              <h2>Vista</h2>
+              <div class="tool-row tools-3" role="group">
+                <button type="button" class="tool active" data-fview="plan">Plan</button>
+                <button type="button" class="tool" data-fview="elev">Elevación</button>
+                <button type="button" class="tool" data-fview="3d">3D</button>
               </div>
-              <p class="hint">Palo/plancha: arrastra. Muro auto: traza la línea de la pared (plates + studs).</p>
+              <label class="field" id="elev-wall-field">
+                <span>Pared (elevación)</span>
+                <select id="framing-elev-wall">
+                  <option value="front">Frente (sur)</option>
+                  <option value="back">Fondo (norte)</option>
+                  <option value="left">Izquierda</option>
+                  <option value="right">Derecha</option>
+                </select>
+              </label>
             </section>
 
             <section class="panel">
-              <h2>Madera</h2>
+              <h2>Herramientas</h2>
+              <div class="tool-row tools-3" role="group">
+                <button type="button" class="tool active" data-ftool="select">Sel</button>
+                <button type="button" class="tool" data-ftool="lumber">Palo</button>
+                <button type="button" class="tool" data-ftool="sheet">Plancha</button>
+              </div>
+              <div class="tool-row tools-3" style="margin-top:0.4rem" role="group">
+                <button type="button" class="tool" data-ftool="door">Puerta</button>
+                <button type="button" class="tool" data-ftool="window">Ventana</button>
+                <button type="button" class="tool" data-ftool="wall">Muro</button>
+              </div>
+              <p class="hint">Puerta/ventana: clic en una pared (plan o elevación). Muro: traza el trazo.</p>
+            </section>
+
+            <section class="panel">
+              <h2>Generar</h2>
+              <button type="button" id="btn-gen-shell" class="btn primary" style="margin-top:0">Caja completa (4 muros)</button>
+              <button type="button" id="btn-gen-joists" class="btn" style="margin-top:0.4rem;width:100%">Joists de piso</button>
+              <button type="button" id="btn-gen-roof" class="btn" style="margin-top:0.4rem;width:100%">Techo a dos aguas</button>
+              <button type="button" id="btn-gen-sheathing" class="btn" style="margin-top:0.4rem;width:100%">Planchas de muro (aprox.)</button>
+            </section>
+
+            <section class="panel">
+              <h2>Madera / params</h2>
               <label class="field">
                 <span>Perfil</span>
                 <select id="framing-profile"></select>
               </label>
               <label class="field">
-                <span>Espaciado studs (in)</span>
+                <span>Espaciado O.C. (in)</span>
                 <select id="framing-oc">
-                  <option value="16" selected>16″ O.C.</option>
-                  <option value="24">24″ O.C.</option>
-                  <option value="12">12″ O.C.</option>
+                  <option value="16" selected>16″</option>
+                  <option value="24">24″</option>
+                  <option value="12">12″</option>
                 </select>
+              </label>
+              <div class="field-row">
+                <label class="field">
+                  <span>Altura muro (ft)</span>
+                  <input id="framing-wall-h" type="number" min="6" step="0.1" value="7.5" />
+                </label>
+                <label class="field">
+                  <span>Pitch techo</span>
+                  <input id="framing-pitch" type="number" min="2" max="12" step="1" value="6" title="rise por 12 run" />
+                </label>
+              </div>
+              <label class="field">
+                <span>Alero / overhang (in)</span>
+                <input id="framing-overhang" type="number" min="0" step="1" value="12" />
               </label>
               <label class="check">
                 <input id="framing-snap" type="checkbox" checked />
@@ -280,7 +313,7 @@
               </label>
               <label class="check">
                 <input id="framing-grid" type="checkbox" checked />
-                Cuadrícula 12″
+                Cuadrícula
               </label>
             </section>
 
@@ -294,6 +327,16 @@
                 <label class="field">
                   <span>Fondo (ft)</span>
                   <input id="framing-d-ft" type="number" min="2" step="0.1" />
+                </label>
+              </div>
+              <div class="field-row">
+                <label class="field">
+                  <span>Puerta An×Al (in)</span>
+                  <input id="framing-door" type="text" value="36x80" />
+                </label>
+                <label class="field">
+                  <span>Ventana An×Al (in)</span>
+                  <input id="framing-window" type="text" value="36x36" />
                 </label>
               </div>
               <button type="button" id="btn-framing-fit" class="btn ghost">Ajustar vista</button>

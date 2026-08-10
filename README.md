@@ -26,11 +26,16 @@ Cada navegador guarda su propio plano (localStorage). Para compartir:
 
 ## Estructura / framing
 
-Pestaña **Estructura**: clic derecho en un área del terreno → **Diseñar estructura**.
+Pestaña **Estructura**: clic derecho en un área → **Diseñar estructura**.
 
-- Palos (2×4, 2×6, 4×4…)
-- Planchas 4×8
-- Muro auto (plates + studs a 16″/24″ O.C.)
-- Lista de corte
+**Vistas:** Plan · Elevación (por pared) · 3D (orbitar)
 
-El render 3D queda para más adelante.
+**Generar:**
+- Caja completa (4 muros + puerta)
+- Joists de piso
+- Techo a dos aguas (rafters + ridge + collars)
+- Planchas de muro
+
+**Herramientas:** palo, plancha, muro, puerta, ventana (king/jack/header/cripples)
+
+**Lista de corte** con totales por perfil. Persistencia + export/import JSON.
